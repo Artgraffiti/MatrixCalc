@@ -7,12 +7,20 @@ using namespace std;
 
 
 /* Matrix errors */
+class IndexError: public exception {
+  public:
+    IndexError():msg_(this->msg_) {}
+    virtual char const *what() const noexcept { return msg_.c_str(); }
+  private:
+    string msg_="Out of bounds";
+};
+
 class DimensionMismatchError: public exception {
   public:
     DimensionMismatchError():msg_(this->msg_) {}
     virtual char const *what() const noexcept { return msg_.c_str(); }
   private:
-      string msg_="matrix sizes do not match";
+    string msg_="Matrix sizes do not match";
 };
 /* Matrix errors */
 
@@ -181,8 +189,12 @@ class Matrix2d {
 
     /* matrix methods */
 		int get_val(const int row, const int col) {
-			return matrix[row-1][col-1];
-		}
+			if ((this->rows >= row && row > 0) && (this->cols >= col && col > 0)) {
+        return matrix[row-1][col-1];
+      } else {
+        throw IndexError();
+      }
+    }
 
 		Matrix2d T() { // transposition
 			Matrix2d result(cols, rows);
@@ -297,16 +309,10 @@ ostream &operator<<(ostream &os, Matrix2d &matrix) { // Matrix stream
 int main() {
 	srand(time(0));
 
-  Matrix2d A = generate_randint_matrix(2, 2);
+  Matrix2d A = generate_randint_matrix(10, 10);
   cout << A << endl;
 
-  cout << "det(A): " << A.det() << endl;
+  cout << A.get_val(10, 10) << endl;
 
   return 0;
 }
-
-
-/* det(A);
- * Matrix2d.power(-1 or N or "T");
- * */
-
