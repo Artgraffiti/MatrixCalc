@@ -12,6 +12,8 @@ class Matrix2d {
 		int cols;
 		int **matrix;
 
+    // Friends
+    friend Matrix2d generate_randint_matrix(const int rows, const int cols, const int s, const int x);	
 	public:
 
 		string name = "unnamed";
@@ -254,22 +256,14 @@ inline long int randint(const int start=0, const int x=10) {
 	return (rand() % x) + start;
 }
 
-/* matrix with random ingers */
-Matrix2d generate_randint_matrix(const int rows, const int cols, const int s=0, const int x=10) {
-	int **matrix;
-	matrix = new int* [rows];
+
+Matrix2d generate_randint_matrix(const int rows, const int cols, const int s=0, const int x=10) { // matrix with random integers	
+	Matrix2d result(rows, cols, 0);
 
 	for (int i=0; i<rows; i++) {
-		matrix[i] = new int[cols];
 		for (int j=0; j<cols; j++) {
-			matrix[i][j] = randint(s, x);
+			result.matrix[i][j] = randint(s, x);
 		}
-	}
-
-	Matrix2d result(rows, cols, matrix);
-
-	for (int i=0; i<rows; i++) {
-		delete[] matrix[i];
 	}
 
 	return result;
@@ -280,8 +274,8 @@ Matrix2d generate_randint_matrix(const int rows, const int cols, const int s=0, 
 //	return A.get_val(1, 1) + A.get_val(2, 2) - A.get_val(1, 2) - A.get_val(2, 1);
 //}
 
-/* Matrix stream */
-ostream &operator<<(ostream &os, Matrix2d &matrix) {
+
+ostream &operator<<(ostream &os, Matrix2d &matrix) { // Matrix stream
   os << matrix.get_represent();
   return os;
 }
@@ -293,7 +287,7 @@ int main() {
   Matrix2d A = generate_randint_matrix(3, 3);
   cout << A << endl;
 
-  A.pow(2);
+  A = A.pow(2);
   cout << A << endl;
 
   return 0;
