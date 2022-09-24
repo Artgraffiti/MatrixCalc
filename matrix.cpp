@@ -21,7 +21,7 @@ class Matrix2d {
 	private:
 		int rows;
 		int cols;
-		int **matrix;
+		long int **matrix;
 
     // Friends
     friend Matrix2d generate_randint_matrix(const int rows, const int cols, const int s, const int x);	
@@ -30,14 +30,14 @@ class Matrix2d {
 		string name = "unnamed";
 
     /* matrix constructor */
-		Matrix2d(const int rows, const int cols, const int * const * const matrix) {
+		Matrix2d(const int rows, const int cols, const long int * const * const matrix) {
 			this->rows = rows;
 			this->cols = cols;
       
       /* copy matrix */
-			this->matrix = new int* [rows]; // create new matrix
+			this->matrix = new long int* [rows]; // create new matrix
 			for (int i=0; i<rows; i++) {
-				this->matrix[i] = new int[cols]; // create new column
+				this->matrix[i] = new long int[cols]; // create new column
 				for (int j=0; j<cols; j++) {
 					this->matrix[i][j] = matrix[i][j]; // copy cell value
 				}
@@ -48,10 +48,10 @@ class Matrix2d {
 			this->rows = rows;
 			this->cols = cols;
 
-			this->matrix = new int* [rows];
+			this->matrix = new long int* [rows];
 			if (!E) { // null matrix
 				for (int i=0; i<rows; i++) {
-					this->matrix[i] = new int[cols];
+					this->matrix[i] = new long int[cols];
 					for (int j=0; j<cols; j++) {
 						this->matrix[i][j] = 0;
 					}
@@ -59,7 +59,7 @@ class Matrix2d {
 			} else {	// identity matrix
 				int e = 0;
 				for (int i=0; i<rows; i++) {
-					this->matrix[i] = new int[cols];
+					this->matrix[i] = new long int[cols];
 					for (int j=0; j<cols; j++) {
 						if (e == j) {
 							this->matrix[i][j] = 1;
@@ -77,9 +77,9 @@ class Matrix2d {
 			this->cols = other.cols;
 
 			
-			this->matrix = new int* [this->rows];
+			this->matrix = new long int* [this->rows];
 			for (int i=0; i<this->rows; i++) {
-				this->matrix[i] = new int[this->cols];
+				this->matrix[i] = new long int[this->cols];
 				for (int j=0; j<this->cols; j++) {
 					this->matrix[i][j] = other.matrix[i][j];
 				}
@@ -106,9 +106,9 @@ class Matrix2d {
 			this->cols = other.cols;
 
 			
-			this->matrix = new int* [this->rows]; // create new matrix
+			this->matrix = new long int* [this->rows]; // create new matrix
 			for (int i=0; i<this->rows; i++) {
-				this->matrix[i] = new int[this->cols]; // create new column
+				this->matrix[i] = new long int[this->cols]; // create new column
 				for (int j=0; j<this->cols; j++) {
 					this->matrix[i][j] = other.matrix[i][j]; // copy cell value
 				}
@@ -145,9 +145,9 @@ class Matrix2d {
 			if (op1.cols == op2.rows) {
 				Matrix2d result(op1.rows, op2.cols);
 
-				int **A = op1.matrix;
-				int **B = op2.matrix;
-				int **C = result.matrix;
+				long int **A = op1.matrix;
+				long int **B = op2.matrix;
+				long int **C = result.matrix;
 
 				int n = op1.rows;
 				int m = op1.cols;
@@ -228,6 +228,14 @@ class Matrix2d {
 			return result;
 		}
 
+    long int det() {
+      long int result = 0;
+      if (rows == cols && rows == 2) {
+        result = matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1];
+      }
+      return result;
+    }
+
     string get_represent() { // create string view
       string result = "";
       for (int i=0; i<rows; i++) {
@@ -289,14 +297,10 @@ ostream &operator<<(ostream &os, Matrix2d &matrix) { // Matrix stream
 int main() {
 	srand(time(0));
 
-  Matrix2d A = generate_randint_matrix(3, 3);
+  Matrix2d A = generate_randint_matrix(2, 2);
   cout << A << endl;
 
-  Matrix2d B = generate_randint_matrix(3, 2);
-  cout << B << endl;
-
-  Matrix2d C = A * B;
-  cout << C << endl;
+  cout << "det(A): " << A.det() << endl;
 
   return 0;
 }
