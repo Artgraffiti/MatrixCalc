@@ -6,12 +6,6 @@
 using namespace std;
 
 
-/* random integer */
-inline long int randint(const int start=0, const int x=10) {
-	return (rand() % x) + start;
-}
-
-
 class Matrix2d {
 	private:
 		int rows;
@@ -170,11 +164,13 @@ class Matrix2d {
 		}
     /* matrix operators */
 		
+
+    /* matrix methods */
 		int get_val(const int row, const int col) {
 			return matrix[row-1][col-1];
 		}
 
-		Matrix2d T() {
+		Matrix2d T() { // transposition
 			Matrix2d result(cols, rows);
 			for (int i=0; i<rows; i++) {
 				for (int j=0; j<cols; j++) {
@@ -184,14 +180,14 @@ class Matrix2d {
 			return result;
 		}
 
-		Matrix2d pow(const char ch) {
+		Matrix2d pow(const char ch) { // transposition
 			if (ch == 'T') {
 				return this->T();
 			}
 			return *this;
 		}
 
-		Matrix2d pow(const int n) {
+		Matrix2d pow(const int n) { // exponentiation
 			Matrix2d result(*this);
 		
 			for (int i=1; i<n; i++) {
@@ -222,7 +218,7 @@ class Matrix2d {
 		//	cout << "Не работает" << endl;
 		//}
 
-    string get_represent() {
+    string get_represent() { // create string view
       string result = "";
       for (int i=0; i<rows; i++) {
 				result += "(";
@@ -237,15 +233,12 @@ class Matrix2d {
 		void show() {
 		  cout << get_represent();
     }
-
-    /* Matrix exceptions */
-
-    //class DimensionError
-
-    /* Matrix exceptions */
+    /* matrix methods */
 
 };
 
+
+/* Matrix opertaor for left operand */
 Matrix2d operator+(const int op1, Matrix2d &op2) {
 	return op2 + op1;
 }
@@ -253,7 +246,15 @@ Matrix2d operator+(const int op1, Matrix2d &op2) {
 Matrix2d operator*(const int op1, Matrix2d &op2) {
 	return op2 * op1;
 }
+/* Matrix opertaor for left operand */
 
+
+/* random integer */
+inline long int randint(const int start=0, const int x=10) {
+	return (rand() % x) + start;
+}
+
+/* matrix with random ingers */
 Matrix2d generate_randint_matrix(const int rows, const int cols, const int s=0, const int x=10) {
 	int **matrix;
 	matrix = new int* [rows];
@@ -279,7 +280,7 @@ Matrix2d generate_randint_matrix(const int rows, const int cols, const int s=0, 
 //	return A.get_val(1, 1) + A.get_val(2, 2) - A.get_val(1, 2) - A.get_val(2, 1);
 //}
 
-
+/* Matrix stream */
 ostream &operator<<(ostream &os, Matrix2d &matrix) {
   os << matrix.get_represent();
   return os;
@@ -292,7 +293,10 @@ int main() {
   Matrix2d A = generate_randint_matrix(3, 3);
   cout << A << endl;
 
-	return 0;
+  A.pow(2);
+  cout << A << endl;
+
+  return 0;
 }
 
 
