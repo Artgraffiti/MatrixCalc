@@ -6,6 +6,17 @@
 using namespace std;
 
 
+/* Matrix errors */
+class DimensionMismatchError: public exception {
+  public:
+    DimensionMismatchError():msg_(this->msg_) {}
+    virtual char const *what() const noexcept { return msg_.c_str(); }
+  private:
+      string msg_="matrix sizes do not match";
+};
+/* Matrix errors */
+
+
 class Matrix2d {
 	private:
 		int rows;
@@ -38,14 +49,14 @@ class Matrix2d {
 			this->cols = cols;
 
 			this->matrix = new int* [rows];
-			if (!E) {
+			if (!E) { // null matrix
 				for (int i=0; i<rows; i++) {
 					this->matrix[i] = new int[cols];
 					for (int j=0; j<cols; j++) {
 						this->matrix[i][j] = 0;
 					}
 				}
-			} else {	
+			} else {	// identity matrix
 				int e = 0;
 				for (int i=0; i<rows; i++) {
 					this->matrix[i] = new int[cols];
@@ -61,7 +72,7 @@ class Matrix2d {
 			}
 		}
 
-		Matrix2d(const Matrix2d &other) {
+		Matrix2d(const Matrix2d &other) { // copy other Matrix2d
 			this->rows = other.rows;
 			this->cols = other.cols;
 
@@ -105,6 +116,13 @@ class Matrix2d {
 			return *this;
 		}
 
+		Matrix2d operator+(const int val) {
+			Matrix2d op1(*this);
+			Matrix2d op2(rows, cols, 1);
+			
+			return op1 + op2 * val;
+		}
+
 		Matrix2d operator+(const Matrix2d &op2) {
 			Matrix2d op1(*this);
 
@@ -114,10 +132,11 @@ class Matrix2d {
 						op1.matrix[i][j] += op2.matrix[i][j];
 					}
 				}
-			} else {
-				cout << "Размерность матриц не соответствует" << endl;
-			}
-			return op1;
+      } else {
+        throw DimensionMismatchError();
+      }
+      
+      return op1;
 		}
 
 		Matrix2d operator*(const Matrix2d &op2) {
@@ -143,8 +162,7 @@ class Matrix2d {
 				}
 				return result;
 			}
-			cout << "Перемножение не возможно, не соответствие размеров матриц" << endl ;
-			return op1;
+      throw DimensionMismatchError();
 		}
 
 		Matrix2d operator*(const int op2) {
@@ -158,12 +176,6 @@ class Matrix2d {
 			return op1;
 		}
 
-		Matrix2d operator+(const int val) {
-			Matrix2d op1(*this);
-			Matrix2d op2(rows, cols, 1);
-			
-			return op1 + op2 * val;
-		}
     /* matrix operators */
 		
 
@@ -216,10 +228,6 @@ class Matrix2d {
 			return result;
 		}
 
-		//void input() {
-		//	cout << "Не работает" << endl;
-		//}
-
     string get_represent() { // create string view
       string result = "";
       for (int i=0; i<rows; i++) {
@@ -257,6 +265,7 @@ inline long int randint(const int start=0, const int x=10) {
 }
 
 
+/* matrix generators */
 Matrix2d generate_randint_matrix(const int rows, const int cols, const int s=0, const int x=10) { // matrix with random integers	
 	Matrix2d result(rows, cols, 0);
 
@@ -268,11 +277,7 @@ Matrix2d generate_randint_matrix(const int rows, const int cols, const int s=0, 
 
 	return result;
 }
-
-
-//int det2x2(const Matrix2d &A) {
-//	return A.get_val(1, 1) + A.get_val(2, 2) - A.get_val(1, 2) - A.get_val(2, 1);
-//}
+/* matrix generators */
 
 
 ostream &operator<<(ostream &os, Matrix2d &matrix) { // Matrix stream
@@ -287,8 +292,11 @@ int main() {
   Matrix2d A = generate_randint_matrix(3, 3);
   cout << A << endl;
 
-  A = A.pow(2);
-  cout << A << endl;
+  Matrix2d B = generate_randint_matrix(3, 2);
+  cout << B << endl;
+
+  Matrix2d C = A * B;
+  cout << C << endl;
 
   return 0;
 }
