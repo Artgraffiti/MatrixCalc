@@ -191,9 +191,8 @@ class Matrix2d {
 		int get_val(const int row, const int col) {
 			if ((this->rows >= row && row > 0) && (this->cols >= col && col > 0)) {
         return matrix[row-1][col-1];
-      } else {
-        throw IndexError();
       }
+      throw IndexError();
     }
 
 		Matrix2d T() { // transposition
@@ -223,21 +222,40 @@ class Matrix2d {
 		}
 
 		Matrix2d minor(const int row, const int col) {
-			Matrix2d result(rows-1, cols-1);
-		
-			int ri = 0;
-			int cj = 0;
-			for (int i=0; i<rows; i++) {
-				if (i == row) {ri=1; continue;}
-				for (int j=0; j<cols; j++) {
-					if (j == col) {cj=1; continue;}
-					
-					result.matrix[i-ri][j-cj] = matrix[i][j];
-					cj = 0;
-				}
-			}
-
-			return result;
+			if ((this->rows >= row && row > 0) && (this->cols >= col && col > 0)) {
+			  int r_rows = rows-1;
+        int r_cols = cols-1;
+        Matrix2d result(r_rows, r_cols);
+			  
+        int move_i = 0;
+        int move_j = 0;
+        for (int i=0; i<r_rows; i++) {
+          if (i == row-1) {
+            move_i = 1;
+            for (int j=0; j<r_cols; j++) {
+              if (j == col-1) {
+                move_j = 1;
+                result.matrix[i][j] = this->matrix[i+move_i][j+move_j];
+                continue;
+              }
+              result.matrix[i][j] = this->matrix[i+move_i][j+move_j];
+            }
+            move_j = 0;
+            continue;
+          }
+          for (int j=0; j<r_cols; j++) {
+            if (j == col-1) {
+              move_j = 1;
+              result.matrix[i][j] = this->matrix[i+move_i][j+move_j];
+              continue;
+            }
+            result.matrix[i][j] = this->matrix[i+move_i][j+move_j];
+          }
+          move_j = 0;
+        }
+        return result;
+      }
+      throw IndexError();
 		}
 
     long int det() {
@@ -268,7 +286,7 @@ class Matrix2d {
 };
 
 
-/* Matrix opertaor for left operand */
+/* Matrix operator for left operand */
 Matrix2d operator+(const int op1, Matrix2d &op2) {
 	return op2 + op1;
 }
@@ -276,7 +294,7 @@ Matrix2d operator+(const int op1, Matrix2d &op2) {
 Matrix2d operator*(const int op1, Matrix2d &op2) {
 	return op2 * op1;
 }
-/* Matrix opertaor for left operand */
+/* Matrix operator for left operand */
 
 
 /* random integer */
@@ -300,7 +318,7 @@ Matrix2d generate_randint_matrix(const int rows, const int cols, const int s=0, 
 /* matrix generators */
 
 
-ostream &operator<<(ostream &os, Matrix2d &matrix) { // Matrix stream
+ostream &operator<<(ostream &os, Matrix2d &matrix) { // Matrix ostream
   os << matrix.get_represent();
   return os;
 }
@@ -309,10 +327,20 @@ ostream &operator<<(ostream &os, Matrix2d &matrix) { // Matrix stream
 int main() {
 	srand(time(0));
 
-  Matrix2d A = generate_randint_matrix(10, 10);
+  Matrix2d A = generate_randint_matrix(4, 4);
   cout << A << endl;
 
-  cout << A.get_val(10, 10) << endl;
+  Matrix2d B1 = A.minor(2, 1);
+  cout << B1 << endl;
+
+  Matrix2d B2 = A.minor(2, 2);
+  cout << B2 << endl;
+  
+  Matrix2d B3 = A.minor(2, 3);
+  cout << B3 << endl;
+
+  Matrix2d B4 = A.minor(2, 4);
+  cout << B4 << endl;
 
   return 0;
 }
