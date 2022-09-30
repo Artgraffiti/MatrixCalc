@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <string>
+#include <cmath>
 
 
 using namespace std;
@@ -27,9 +28,22 @@ class DimensionMismatchError: public exception {
 
 class Matrix2d {
 	private:
+    // variables
 		int rows;
 		int cols;
 		long int **matrix;
+
+    /* private methods */
+    long int det2x2() {
+      long int result = 0;
+      if (rows == cols && cols == 2) {
+        result = matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1];
+      } else { 
+        throw DimensionMismatchError();
+      }
+      return result;
+    }
+    /* private methods */
 
     // Friends
     friend Matrix2d generate_randint_matrix(const int rows, const int cols, const int s, const int x);	
@@ -258,10 +272,30 @@ class Matrix2d {
       throw IndexError();
 		}
 
+    long int algebraic_addition(const int row, const int col) {
+      return get_val(row, col) * std::pow(-1, row+col) * minor(row, col).det();
+    }
+
+    Matrix2d algebraic_addition_matrix() {
+      Matrix2d result(rows, cols, 0);
+      for (int i=0; i<rows; i++) {
+        for (int j=0; j<cols; j++) {
+          result.matrix[i][j] = algebraic_addition(i+1, j+1);
+        }
+      }
+      return result;
+    }
+
     long int det() {
       long int result = 0;
-      if (rows == cols && rows == 2) {
-        result = matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1];
+      if (rows == cols && cols == 1) {
+        return matrix[0][0];
+      } else if (rows == cols && cols == 2) {
+        result = det2x2();
+      } else if (rows == cols && cols > 2) {
+        result = 404; // not work
+      } else { 
+        throw DimensionMismatchError();
       }
       return result;
     }
@@ -327,20 +361,12 @@ ostream &operator<<(ostream &os, Matrix2d &matrix) { // Matrix ostream
 int main() {
 	srand(time(0));
 
-  Matrix2d A = generate_randint_matrix(4, 4);
+  Matrix2d A = generate_randint_matrix(3, 3, 0, 3);
   cout << A << endl;
 
-  Matrix2d B1 = A.minor(2, 1);
-  cout << B1 << endl;
+  Matrix2d B = A.algebraic_addition_matrix();
 
-  Matrix2d B2 = A.minor(2, 2);
-  cout << B2 << endl;
-  
-  Matrix2d B3 = A.minor(2, 3);
-  cout << B3 << endl;
-
-  Matrix2d B4 = A.minor(2, 4);
-  cout << B4 << endl;
+  cout << B << endl;
 
   return 0;
 }
