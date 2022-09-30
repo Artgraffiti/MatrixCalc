@@ -43,6 +43,15 @@ class Matrix2d {
       }
       return result;
     }
+
+    long int detMoreXMore() {
+      long int result = 0;
+      for (int i=0; i<rows; i++) {
+        result += algebraic_addition(i+1, 1);
+      }
+      return result;
+    }
+
     /* private methods */
 
     // Friends
@@ -114,7 +123,7 @@ class Matrix2d {
 			for (int i=0; i<rows; i++) {
 				delete[] matrix[i];
 			}
-			cout << "Вызвался деструктор класса: " << this << endl;
+			// cout << "Вызвался деструктор класса: " << this << endl;
 		}
     /* matrix distructor */
 
@@ -273,7 +282,7 @@ class Matrix2d {
 		}
 
     long int algebraic_addition(const int row, const int col) {
-      return get_val(row, col) * std::pow(-1, row+col) * minor(row, col).det();
+      return std::pow(-1, row+col) * get_val(row, col) * minor(row, col).det();
     }
 
     Matrix2d algebraic_addition_matrix() {
@@ -293,7 +302,7 @@ class Matrix2d {
       } else if (rows == cols && cols == 2) {
         result = det2x2();
       } else if (rows == cols && cols > 2) {
-        result = 404; // not work
+        result = detMoreXMore();
       } else { 
         throw DimensionMismatchError();
       }
@@ -361,12 +370,12 @@ ostream &operator<<(ostream &os, Matrix2d &matrix) { // Matrix ostream
 int main() {
 	srand(time(0));
 
-  Matrix2d A = generate_randint_matrix(3, 3, 0, 3);
+  Matrix2d A = generate_randint_matrix(6, 6);
   cout << A << endl;
 
-  Matrix2d B = A.algebraic_addition_matrix();
+  long int b = A.det();
 
-  cout << B << endl;
+  cout << b << endl;
 
   return 0;
 }
